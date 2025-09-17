@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted   # Use your Windows self-hosted runner
 
     steps:
     - name: Checkout Code
@@ -22,11 +22,6 @@ jobs:
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/demo-app:latest .
         docker push ${{ secrets.DOCKER_USERNAME }}/demo-app:latest
-
-    - name: Setup kubectl
-      uses: azure/setup-kubectl@v3
-      with:
-        version: 'v1.27.0'
 
     - name: Deploy to Kubernetes
       run: |
