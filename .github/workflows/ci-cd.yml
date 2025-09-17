@@ -6,25 +6,28 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted   # Windows self-hosted runner
+    runs-on: self-hosted
+
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
 
     - name: Log in to DockerHub
-      shell: powershell
-      run: |
-        docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+      shell: cmd
+      run: docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%
 
     - name: Build and Push Docker Image
-      shell: powershell
+      shell: cmd
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/demo-app:latest .
-        docker push ${{ secrets.DOCKER_USERNAME }}/demo-app:latest
+        docker build -t %DOCKER_USERNAME%/demo-app:latest .
+        docker push %DOCKER_USERNAME%/demo-app:latest
 
     - name: Deploy to Kubernetes
-      shell: powershell
+      shell: cmd
       run: |
         kubectl apply -f k8s/deployment.yaml
         kubectl apply -f k8s/service.yaml
